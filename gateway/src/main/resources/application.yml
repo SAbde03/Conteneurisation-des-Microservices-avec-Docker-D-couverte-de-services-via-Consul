@@ -1,0 +1,45 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: SERVICE-GATEWAY
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: false
+
+      routes:
+        - id: client-route
+          uri: lb://SERVICE-CLIENT
+          predicates:
+            - Path=/client/**
+
+        - id: car-route
+          uri: lb://SERVICE-CAR
+          predicates:
+            Path=/car/**
+
+  devtools:
+    restart:
+      enabled: false
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
